@@ -8,13 +8,33 @@ generator client {
 datasource db {
     provider = "sqlite"
     url      = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
-model Example {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Product {
+  id        Int        @id @default(autoincrement())
+  name      String
+  price     Float
+  orders    Order[]
+  inventory Inventory[] // One-to-one relation
+}
 
-    @@index([name])
+model Order {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int
+  total       Float    @default(0)
+  inventoryId Int
+  inventory   Inventory @relation(fields: [inventoryId], references: [id]) // One-to-one relation
+}
+
+model Inventory {
+  id            Int      @id @default(autoincrement())
+  productId     Int      @unique // Unique field to define one-to-one relation
+  product       Product  @relation(fields: [productId], references: [id])
+  quantity      Int      @default(0)
+  totalGained   Int      @default(0)
+  totalRevenue  Float    @default(0)
+  orders        Order[]
 }
