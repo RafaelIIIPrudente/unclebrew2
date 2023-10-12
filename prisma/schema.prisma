@@ -14,7 +14,7 @@ datasource db {
 model Product {
   id        Int        @id @default(autoincrement())
   name      String
-  price     Float
+  price     Float      @default(0)
   orders    Order[]
   inventory Inventory[] // One-to-one relation
 }
@@ -22,17 +22,17 @@ model Product {
 model Order {
   id          Int      @id @default(autoincrement())
   productId   Int
-  product     Product  @relation(fields: [productId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity    Int
   total       Float    @default(0)
   inventoryId Int
-  inventory   Inventory @relation(fields: [inventoryId], references: [id]) // One-to-one relation
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade) // One-to-one relation
 }
 
 model Inventory {
   id            Int      @id @default(autoincrement())
   productId     Int      @unique // Unique field to define one-to-one relation
-  product       Product  @relation(fields: [productId], references: [id])
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity      Int      @default(0)
   totalGained   Int      @default(0)
   totalRevenue  Float    @default(0)
